@@ -9,8 +9,6 @@ class User:
         self.balance=0
         self.bank=bank
         self.statement=[]
-    # def create_account():
-
 
     def generate_account_number(self):
         return str(random.randint(10**10, 10**11 - 1))
@@ -19,10 +17,9 @@ class User:
         if amount > 0:
             self.balance += amount
             self.bank.bank_total_balance += amount
-            print("""--------------
-                      Deposit Done
-                    ---------------
-                  """)
+            print("---------------")
+            print("Deposit Done")
+            print("---------------")
             self.statement.append(f"Deposit: ${amount}")
         else:
             print("Negative amount not accepted")
@@ -42,7 +39,6 @@ class User:
             print("Negative amount not accepted")
 
     def available_balance(self):
-        # print(f"{self.name} Available Balance: {self.balance}")
         print("---------------")
         print(f"{self.name} Available Balance: {self.balance}")
         print("---------------")
@@ -63,7 +59,6 @@ class User:
             print("Negative amount not accepted")
     
     def loan_request(self,amount):
-        if self.bank.is_loan_enabled:
             if amount > 0 and len(self.bank.loans)<2:
                 self.bank.loans[self]=amount
                 self.balance += amount
@@ -79,7 +74,6 @@ class User:
                 print("---------------")
                 print("Loan request not accepted ,Sorry !!!")
                 print("---------------")
-
     def view_statement(self):
         for stat in self.statement:
             print(stat)
@@ -120,9 +114,11 @@ class Bank:
 
     def print_users(self):
         for user in self.users:
-            print(f"{user.name} {user.email} {user.address} {user.account_type}" )
+            print(f"{user.name} {user.email} {user.address} {user.account_type} {user.account_no}" )
             print("-----------------------------")
     
+    def toggle_loan(self,enable):
+        self.is_loan_enabled=enable
 
 admin = Bank()
 
@@ -160,8 +156,12 @@ while(choice!=9):
     elif(choice==5):
         user.view_statement()
     elif(choice==6):
-        loan_amount=int(input('Enter loan amount:'))
-        user.loan_request(loan_amount)
+        if(user.bank.is_loan_enabled):
+            loan_amount=int(input('Enter loan amount:'))
+            user.loan_request(loan_amount)
+        else:
+            print("Currently loan system OFF :( ")
+            print("-----------------------------")
     elif(choice==7):
         transfer_amount=int(input('Enter amount to transfer:'))
         transfer_email=input("Enter email you want to transfer this amount:")
@@ -174,10 +174,11 @@ while(choice!=9):
         print("4.BANK AVAILABLE BALANCE")
         print("5.TOTAL LOAN AMOUNT")
         print("6.LOAN ON OFF")
-        print("7. Exit")
+        print("7.Exit")
         
         choice=int(input("Enter your choice:"))
         print("-----------------------------")
+
         while(choice!=7):
 
             if(choice==1):
@@ -199,10 +200,11 @@ while(choice!=9):
                 print(admin.total_loan_amount)
             elif(choice==6):
                 loan_on_off=input('Enter loan On or Off:').lower()
+                print("-----------------------------")
                 if(loan_on_off=="on"):
-                    admin.is_loan_enabled=True
+                    admin.toggle_loan(True)
                 elif(loan_on_off=="off"):
-                    admin.is_loan_enabled=False
+                    admin.toggle_loan(False)
 
             print("1.CREATE AN ACCOUNT")
             print("2.DELETE AN ACCOUNT")
