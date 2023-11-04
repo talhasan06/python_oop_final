@@ -1,12 +1,12 @@
 import random
 
-class BankingSystem:
+class Admin:
     def __init__(self):
         self.accounts={}
         self.allow_loans=True
 
     def create_account(self,name,email,address,account_type):
-        account = Account(name,email,address,account_type)
+        account = User(name,email,address,account_type)
         self.accounts[account.account_number]=account
         return account
     
@@ -60,7 +60,7 @@ class BankingSystem:
             print(f"Allow Loans: {'Yes' if banking_system.allow_loans else 'No'}")
             print("--------------------------")
 
-class Account:
+class User:
     def __init__(self,name,email,address,account_type):
         self.name=name
         self.email=email
@@ -121,7 +121,7 @@ class Account:
         for transaction in self.transaction_history:
             print(transaction)
 
-banking_system = BankingSystem()
+banking_system = Admin()
 
 print("1.CREATE AN ACCOUNT")
 print("2.DEPOSIT")
