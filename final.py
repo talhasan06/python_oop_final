@@ -47,6 +47,8 @@ class Admin:
 
     def is_loan_available(self):
         self.allow_loans = not self.allow_loans
+        print("Loan featured status changed")
+        print("--------------------------")
 
     def print_all_users(self):
         for account in self.accounts.values():
