@@ -11,11 +11,10 @@ class BankingSystem:
         return account
     
     def delete_account(self,account_number):
-        for account in  self.accounts:
-            if account.account_number == account_number:
-                self.accounts.remove(account)
-                print(f"Account {account_number} deleted")
-                return
+        if account_number in self.accounts:
+            del self.accounts[account_number]
+            print(f"Account {account_number} deleted")
+        else:
             print(f"Account {account_number} not found")
     
     def list_accounts(self):
@@ -26,6 +25,12 @@ class BankingSystem:
         total=0
         for account in self.accounts.values():
             total+=account.balance
+        return total
+    
+    def total_loan_amount(self):
+        total=0
+        for account in self.accounts.values():
+            total+=account.loan_amount
         return total
     
     def total_loans(self):
@@ -40,7 +45,8 @@ class BankingSystem:
         print(f"Total balance: {self.total_balance()}")
         print(f"Total loans: {self.total_loans()}")
 
-    # def is_loan_available(self):
+    def is_loan_available(self):
+        self.allow_loans = not self.allow_loans
 
     def print_all_users(self):
         for account in self.accounts.values():
@@ -51,7 +57,7 @@ class BankingSystem:
             print(f"Account Type: {account.account_type}")
             print(f"Balance: {account.balance}")
             print(f"Number of Loans: {account.num_loans}")
-            print(f"Allow Loans: {'Yes' if account.allow_loans else 'No'}")
+            print(f"Allow Loans: {'Yes' if banking_system.allow_loans else 'No'}")
             print("--------------------------")
 
 class Account:
@@ -64,6 +70,7 @@ class Account:
         self.account_number = random.randint(100000,999999)
         self.transaction_history=[]
         self.num_loans=0
+        self.loan_amount=0
 
     def deposit(self,amount):
         self.balance += amount
@@ -82,6 +89,7 @@ class Account:
         if banking_system.allow_loans and self.num_loans < 2:
             self.balance += amount
             self.num_loans += 1
+            self.loan_amount+=amount
             self.transaction_history.append(f"Took loan of {amount}")
             print("**** Loan request accepted ****")
         elif not self.allow_loans:
@@ -123,11 +131,12 @@ print("5.TRANSACTION HISTORY")
 print("6.APPLY FOR LOAN")
 print("7.BALANCE TRANSFER")
 print("8.Admin")
-print("9.Exit")
+print("0.Exit")
 print("--------------------------")
+
 choice=int(input("Enter your choice:"))
 
-while(choice!=9):
+while(choice!=0):
     if (choice==1):
         name=input("Enter name:")
         email=input('Enter your email:')
@@ -160,7 +169,7 @@ while(choice!=9):
         account_number = int(input("Enter account number you want to check balance for:"))
         if account_number in banking_system.accounts:
             account = banking_system.accounts[account_number]
-            print(account.name,account.balance)
+            print(f"Balance: ${account.balance}")
             print("--------------------------")
         else:
             print("Account not found")
@@ -201,7 +210,9 @@ while(choice!=9):
     
     elif choice == 8:
         password = input("Enter password:")
+        # Admin panel password
         default_pass="1A2bB345"
+
         if(password == default_pass):
             print("1.CREATE AN ACCOUNT")
             print("2.DELETE AN ACCOUNT")
@@ -209,41 +220,52 @@ while(choice!=9):
             print("4.CHECK TOTAL BALANCE OF THE BANK")
             print("5.CHECK TOTAL LOAN AMOUNT")
             print("6.LOAN FEATURE OF THE BANK")
+            print("0.EXIT")
+            print("--------------------------")
 
             choice = int(input("Enter your choice:"))
 
-            if(choice==1):
-                name=input("Enter name:")
-                email=input('Enter your email:')
-                address=input("Enter your address:")
-                account_type=input("Account type:")
-                user = banking_system.create_account(name,email,address,account_type)
-                print(f"Here is your account number:{user.account_number}")
+            while(choice!=0):
+                if(choice==1):
+                    name=input("Enter name:")
+                    email=input('Enter your email:')
+                    address=input("Enter your address:")
+                    account_type=input("Account type:")
+                    user = banking_system.create_account(name,email,address,account_type)
+                    print(f"Here is your account number:{user.account_number}")
+                    print("--------------------------")
+                elif(choice==2):
+                    account_number=int(input("Enter account number to DELETE:"))
+                    if account_number in banking_system.accounts:
+                        banking_system.delete_account(account_number)
+                        print("--------------------------")
+                    else:
+                        print("Account not found")
+                        print("--------------------------")
+                elif (choice==3):
+                        banking_system.print_all_users()
+                elif (choice==4):
+                        print(f"Total Balance: ${banking_system.total_balance()}")
+                        print("--------------------------")
+                elif (choice==5):
+                        print(f"Total Loan: ${banking_system.total_loan_amount()}")
+                        print("--------------------------")
+                elif (choice==6):
+                    print(f"Loan Feature Active: {'Yes' if banking_system.allow_loans else 'No'}")
+                    user_input=input("If you want to change Loan feature press Y else type N:")
+                    if(user_input=="Y"):
+                        banking_system.is_loan_available()
+                
+                print("1.CREATE AN ACCOUNT")
+                print("2.DELETE AN ACCOUNT")
+                print("3.ACCOUNTS LIST")
+                print("4.CHECK TOTAL BALANCE OF THE BANK")
+                print("5.CHECK TOTAL LOAN AMOUNT")
+                print("6.LOAN FEATURE OF THE BANK")
+                print("0.EXIT")
                 print("--------------------------")
-            elif(choice==2):
-                account_number=int(input("Enter account number to DELETE:"))
-                if account_number in banking_system.accounts:
-                    account=banking_system.accounts[account_number]
-                    account.delete_account(account_number)
-                    print("--------------------------")
-                else:
-                    print("Account not found")
-                    print("--------------------------")
-            elif (choice==3):
-                    banking_system.print_all_users()
-            elif (choice==4):
-                    print(f"Total Balance: ${banking_system.total_balance()}")
-            elif (choice==5):
-                    print(f"Total Loan: ${banking_system.total_loans()}")
-            elif (choice==6):
-                print(f"Loan Feature Active: {'Yes' if banking_system.allow_loans else 'No'}")
-                user_input=input("Stop Loan feature press Y :")
-                upper_input=user_input.upper()
-                if(upper_input=="Y"):
-                      
-
-
-    
+                choice = int(input("Enter your choice:"))
+                
     print("1.CREATE AN ACCOUNT")
     print("2.DEPOSIT")
     print("3.WITHDRAW")
@@ -251,7 +273,8 @@ while(choice!=9):
     print("5.TRANSACTION HISTORY")
     print("6.APPLY FOR LOAN")
     print("7.BALANCE TRANSFER")
-    print("8.Print all User")
+    print("8.Admin")
     print("9.Exit")
     print("--------------------------")
+
     choice = int(input("Enter your choice:"))
